@@ -1,4 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
+import redis from "../lib/redisClient.js";
+import type { Record } from "../types.js";
+import crypto from "crypto";
 
 export const idempotencyMiddleware = async (
   req: Request,
@@ -11,6 +14,22 @@ export const idempotencyMiddleware = async (
     return res.status(400).json({
       error: "Idempotency-Key header is required",
     });
+  }
+
+  const bodyHash = crypto
+    .createHash("sha256")
+    .update(JSON.stringify(req.body))
+    .digest("hex");
+
+  let recordRaw = await redis.get(key);
+  let record: Record | null = recordRaw ? JSON.parse(recordRaw) : null;
+
+  if (record) {
+    if (record.bodyHash !== bodyHash) {
+      return res.status(422).json({
+        error: "Idempotency key already exists with different body",
+      });
+    }
   }
 
   next();
