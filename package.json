@@ -21,6 +21,7 @@
   "homepage": "https://github.com/ea-4/Idempotency-Gateway#readme",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ioredis": "^5.10.1"
   },
