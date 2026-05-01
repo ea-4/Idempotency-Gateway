@@ -1,0 +1,31 @@
+{
+  "name": "idempotency-gateway",
+  "version": "1.0.0",
+  "main": "index.js",
+ "scripts": {
+    "dev": "ts-node-dev --respawn server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ea-4/Idempotency-Gateway.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ea-4/Idempotency-Gateway/issues"
+  },
+  "homepage": "https://github.com/ea-4/Idempotency-Gateway#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1",
+    "ioredis": "^5.10.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^6.0.3"
+  }
+}
