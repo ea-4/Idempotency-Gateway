@@ -49,8 +49,8 @@ sequenceDiagram
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-link>
-cd <your-repo-name>
+git clone https://github.com/ea-4/Idempotency-Gateway
+cd Idempotency-Gateway
 ```
 
 ### 2. Install dependencies
