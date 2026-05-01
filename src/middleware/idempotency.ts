@@ -23,18 +23,36 @@ export const idempotencyMiddleware = async (
 
   let recordRaw = await redis.get(key);
   let record: Record | null = recordRaw ? JSON.parse(recordRaw) : null;
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
-  if (record) {
-    if (record.bodyHash !== bodyHash) {
-      return res.status(422).json({
-        error: "Idempotency key already exists with different body",
-      });
-    }
+  let attempts = 0;
 
-    if (record?.status === "COMPLETED" && record.response) {
-      res.set("X-Cache-Hit", "true");
-      return res.status(record.response.statusCode).json(record.response.body);
-    }
+  while (attempts < 5) {
+    let recordRaw = await redis.get(key);
+    let record: Record | null = recordRaw ? JSON.parse(recordRaw) : null;
+
+    if (record) {
+      if (record.bodyHash !== bodyHash) {
+        return res.status(422).json({
+          error: "Idempotency key already exists with different body",
+        });
+      }
+
+      if (record?.status === "COMPLETED" && record.response) {
+        res.set("X-Cache-Hit", "true");
+        return res
+          .status(record.response.statusCode)
+          .json(record.response.body);
+      }
+
+      if (record?.status === "PROCESSING") {
+        await sleep(2000);
+        attempts++;
+        continue;
+      }
+    } 
+    break;
   }
 
   if (!record) {
