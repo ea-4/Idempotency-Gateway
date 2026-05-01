@@ -32,5 +32,15 @@ export const idempotencyMiddleware = async (
     }
   }
 
+
+  if (!record) {
+  const initialRecord: Record = {
+    status: "PROCESSING",
+    bodyHash,
+  };
+
+  await redis.set(key, JSON.stringify(initialRecord), "EX", 60);
+}
+
   next();
 };
