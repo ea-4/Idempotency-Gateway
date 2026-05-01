@@ -30,6 +30,11 @@ export const idempotencyMiddleware = async (
         error: "Idempotency key already exists with different body",
       });
     }
+
+    if (record?.status === "COMPLETED" && record.response) {
+      res.set("X-Cache-Hit", "true");
+      return res.status(record.response.statusCode).json(record.response.body);
+    }
   }
 
   if (!record) {
