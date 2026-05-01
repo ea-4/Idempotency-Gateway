@@ -239,4 +239,4 @@ You can test using Postman or curl:
 
 ## Conclusion
 
-This implementation demonstrates how idempotency can be applied to payment systems to ensure **safe retries and exactly-once processing**, which is critical for financial applications.
+This implementation demonstrates how idempotency can be applied to FinSafe's payment systems to ensure **safe retries and exactly-once processing**, which is critical for financial applications.
