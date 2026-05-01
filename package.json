@@ -2,7 +2,8 @@
   "name": "idempotency-gateway",
   "version": "1.0.0",
   "main": "index.js",
- "scripts": {
+  "type": "module",
+  "scripts": {
     "dev": "ts-node-dev --respawn server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
