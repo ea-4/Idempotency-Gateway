@@ -32,15 +32,32 @@ export const idempotencyMiddleware = async (
     }
   }
 
-
   if (!record) {
-  const initialRecord: Record = {
-    status: "PROCESSING",
-    bodyHash,
-  };
+    const initialRecord: Record = {
+      status: "PROCESSING",
+      bodyHash,
+    };
 
-  await redis.set(key, JSON.stringify(initialRecord), "EX", 60);
-}
+    await redis.set(key, JSON.stringify(initialRecord), "EX", 60);
+  }
+
+  const originalJson = res.json;
+
+  res.json = function (data: any) {
+    const isSuccess = res.statusCode >= 200 && res.statusCode < 500;
+
+    const finalRecord: Record = {
+      status: isSuccess ? "COMPLETED" : "FAILED",
+      bodyHash,
+      ...(isSuccess
+        ? { response: { statusCode: res.statusCode, body: data } }
+        : {}),
+    };
+
+    redis.set(key, JSON.stringify(finalRecord), "EX", 86400);
+
+    return originalJson.call(this, data);
+  };
 
   next();
 };
