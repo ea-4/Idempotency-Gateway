@@ -10,6 +10,10 @@ In real-world payment systems, clients may resend the same request if they do no
 
 ## Architecture Diagram
 
+### Request Execution & Idempotency Flow 
+
+This sequence diagram illustrates how the gateway handles concurrent requests, cache hits, and payload integrity verification.
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -17,7 +21,8 @@ sequenceDiagram
     participant Redis
 
     Client->>API: POST /process-payment (Idempotency-Key)
-    API->>Redis: Check key
+    API->>API: Generate SHA-256 Body Hash
+    API->>Redis: GET Idempotency-Key
 
     alt Key does not exist
         API->>Redis: Save {status: PROCESSING}
@@ -28,7 +33,7 @@ sequenceDiagram
         alt Status = COMPLETED
             API->>Client: Return cached response (X-Cache-Hit: true)
         else Status = PROCESSING
-            API->>API: Wait & retry
+            API->>API: Poll until status = COMPLETED
             API->>Redis: Fetch updated record
             API->>Client: Return result
         end
