@@ -1,11 +1,12 @@
 import express from "express";
+import { idempotencyMiddleware } from "./middleware/idempotency.js";
 
 const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-app.post("/process-payment", async (req, res) => {
+app.post("/process-payment", idempotencyMiddleware, async (req, res) => {
   const { amount, currency } = req.body;
 
   await new Promise((resolve) => setTimeout(resolve, 2000));
